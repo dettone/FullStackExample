@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,55 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-
+//trata exceptions GERAIS
 @ControllerAdvice // Controla toda a aplicacao
 public class AlgaMoneyExceptionHandler extends ResponseEntityExceptionHandler {
 	@Autowired
 	private MessageSource messageSource;
 
+	
+
+	@ExceptionHandler({ EmptyResultDataAccessException.class })
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<Object> handleEmptyResultDataAcessException(EmptyResultDataAccessException ex,
+			WebRequest request) {
+		String mensagemUsuario = messageSource.getMessage("Recurso.nao-encontrado", null,
+				LocaleContextHolder.getLocale());
+		String mensagemDesenvolvedor = ex.toString();
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+	}
+	
+	@ExceptionHandler({DataIntegrityViolationException.class})
+	public ResponseEntity <Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request){
+		String mensagemUsuario = messageSource.getMessage("recurso.operacao-nao-permitida", null,
+				LocaleContextHolder.getLocale());
+		//acha na raiz mesmo o problema pra ser organizada melhora muito
+		String mensagemDesenvolvedor = ExceptionUtils.getRootCauseMessage(ex);
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+	
+	public static class Erro {
+		private String mensagemUsuario;
+		private String mensagemDesenvolvedor;
+
+		public Erro(String mensagemUsuario, String mensagemDesenvolvedor) {
+
+			this.mensagemUsuario = mensagemUsuario;
+			this.mensagemDesenvolvedor = mensagemDesenvolvedor;
+		}
+
+		public String getMensagemUsuario() {
+			return mensagemUsuario;
+		}
+
+		public String getMensagemDesenvolvedor() {
+			return mensagemDesenvolvedor;
+		}
+	}
+	
+	
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -61,34 +106,4 @@ public class AlgaMoneyExceptionHandler extends ResponseEntityExceptionHandler {
 		return erros;
 	}
 
-	@ExceptionHandler({ EmptyResultDataAccessException.class })
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ResponseEntity<Object> handleEmptyResultDataAcessException(EmptyResultDataAccessException ex,
-			WebRequest request) {
-		String mensagemUsuario = messageSource.getMessage("Recurso.nao-encontrado", null,
-				LocaleContextHolder.getLocale());
-		String mensagemDesenvolvedor = ex.toString();
-		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
-		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
-
-	}
-
-	public static class Erro {
-		private String mensagemUsuario;
-		private String mensagemDesenvolvedor;
-
-		public Erro(String mensagemUsuario, String mensagemDesenvolvedor) {
-
-			this.mensagemUsuario = mensagemUsuario;
-			this.mensagemDesenvolvedor = mensagemDesenvolvedor;
-		}
-
-		public String getMensagemUsuario() {
-			return mensagemUsuario;
-		}
-
-		public String getMensagemDesenvolvedor() {
-			return mensagemDesenvolvedor;
-		}
-	}
 }

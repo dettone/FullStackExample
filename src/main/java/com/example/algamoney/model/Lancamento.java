@@ -13,156 +13,143 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+//import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "lancamento")
 public class Lancamento {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long codigo;
 	
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long codigo;
-private String descricao;
+	@NotNull
+	private String descricao;
+	
+	@NotNull
+	@Column(name = "data_vencimento")
+	//@JsonFormat(pattern = "dd/MM/yyyy")
+	private LocalDate dataVencimento;
 
-@Column(name = "data_vencimento")
-private LocalDate dataVencimento;
+	@Column(name = "data_pagamento")
+	//@JsonFormat(pattern = "dd/MM/yyyy")
+	private LocalDate dataPagamento;
+	
+	@NotNull
+	private BigDecimal valor;
+	private String observacao;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private Tipo tipo;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "codigo_categoria")
+	private Categoria categoria;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "codigo_pessoa")
+	private Pessoa pessoa;
 
-@Column(name = "data_pagamento")
-private LocalDate dataPagamento;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((codigo == null) ? 0 : codigo.hashCode());
+		return result;
+	}
 
-private BigDecimal valor;
-private String observacao;
-
-@Enumerated(EnumType.STRING)
-private Tipo tipo;
-
-
-@ManyToOne
-@JoinColumn(name="codigo_categoria")
-private Categoria categoria;
-
-
-@ManyToOne
-@JoinColumn(name="codigo_pessoa")
-private Pessoa pessoa;
-@Override
-public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + ((codigo == null) ? 0 : codigo.hashCode());
-	return result;
-}
-
-
-@Override
-public boolean equals(Object obj) {
-	if (this == obj)
-		return true;
-	if (obj == null)
-		return false;
-	if (getClass() != obj.getClass())
-		return false;
-	Lancamento other = (Lancamento) obj;
-	if (codigo == null) {
-		if (other.codigo != null)
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-	} else if (!codigo.equals(other.codigo))
-		return false;
-	return true;
-}
+		if (getClass() != obj.getClass())
+			return false;
+		Lancamento other = (Lancamento) obj;
+		if (codigo == null) {
+			if (other.codigo != null)
+				return false;
+		} else if (!codigo.equals(other.codigo))
+			return false;
+		return true;
+	}
 
+	public Long getCodigo() {
+		return codigo;
+	}
 
-public Long getCodigo() {
-	return codigo;
-}
+	public void setCodigo(Long codigo) {
+		this.codigo = codigo;
+	}
 
+	public String getDescricao() {
+		return descricao;
+	}
 
-public void setCodigo(Long codigo) {
-	this.codigo = codigo;
-}
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
 
+	public LocalDate getDataVencimento() {
+		return dataVencimento;
+	}
 
-public String getDescricao() {
-	return descricao;
-}
+	public void setDataVencimento(LocalDate dataVencimento) {
+		this.dataVencimento = dataVencimento;
+	}
 
+	public LocalDate getDataPagamento() {
+		return dataPagamento;
+	}
 
-public void setDescricao(String descricao) {
-	this.descricao = descricao;
-}
+	public void setDataPagamento(LocalDate dataPagamento) {
+		this.dataPagamento = dataPagamento;
+	}
 
+	public BigDecimal getValor() {
+		return valor;
+	}
 
-public LocalDate getDataVencimento() {
-	return dataVencimento;
-}
+	public void setValor(BigDecimal valor) {
+		this.valor = valor;
+	}
 
+	public String getObservacao() {
+		return observacao;
+	}
 
-public void setDataVencimento(LocalDate dataVencimento) {
-	this.dataVencimento = dataVencimento;
-}
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
+	}
 
+	public Tipo getTipo() {
+		return tipo;
+	}
 
-public LocalDate getDataPagamento() {
-	return dataPagamento;
-}
+	public void setTipo(Tipo tipo) {
+		this.tipo = tipo;
+	}
 
+	public Categoria getCategoria() {
+		return categoria;
+	}
 
-public void setDataPagamento(LocalDate dataPagamento) {
-	this.dataPagamento = dataPagamento;
-}
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
+	}
 
+	public Pessoa getPessoa() {
+		return pessoa;
+	}
 
-public BigDecimal getValor() {
-	return valor;
-}
-
-
-public void setValor(BigDecimal valor) {
-	this.valor = valor;
-}
-
-
-public String getObservacao() {
-	return observacao;
-}
-
-
-public void setObservacao(String observacao) {
-	this.observacao = observacao;
-}
-
-
-public Tipo getTipo() {
-	return tipo;
-}
-
-
-public void setTipo(Tipo tipo) {
-	this.tipo = tipo;
-}
-
-
-public Categoria getCategoria() {
-	return categoria;
-}
-
-
-public void setCategoria(Categoria categoria) {
-	this.categoria = categoria;
-}
-
-
-public Pessoa getPessoa() {
-	return pessoa;
-}
-
-
-public void setPessoa(Pessoa pessoa) {
-	this.pessoa = pessoa;
-}
-
-
-
-
+	public void setPessoa(Pessoa pessoa) {
+		this.pessoa = pessoa;
+	}
 
 }

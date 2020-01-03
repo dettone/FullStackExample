@@ -38,9 +38,10 @@ public class PessoaResource {
 	// aplicador de aplication event
 	@Autowired
 	private ApplicationEventPublisher publisher;
-    
+
 	@Autowired
-   private PessoaService pessoaService;
+	private PessoaService pessoaService;
+
 	@PostMapping
 	public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
 		Pessoa pessoaSalva = pessoaRepository.save(pessoa);
@@ -78,13 +79,13 @@ public class PessoaResource {
 	 * codigo) { Pessoa pessoa = new Pessoa(); pessoa.setCodigo(codigo);
 	 * this.pessoaRepository.delete(pessoa); }
 	 */
-	
+
 	@PutMapping("/{codigo}")
-	public ResponseEntity<Pessoa> atualizar (@PathVariable Long codigo, @Valid @RequestBody Pessoa pessoa){
-	Pessoa pessoaSalva = pessoaService.atualizar(codigo, pessoa);
+	public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo, @Valid @RequestBody Pessoa pessoa) {
+		Pessoa pessoaSalva = pessoaService.atualizar(codigo, pessoa);
 		return ResponseEntity.ok(pessoaSalva);
 	}
-	
+
 	@PutMapping("/{codigo}/ativo")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void atualizarPropriedadeAtivo(@PathVariable Long codigo, @RequestBody Boolean ativo) {

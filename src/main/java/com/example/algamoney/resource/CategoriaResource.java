@@ -35,27 +35,27 @@ public class CategoriaResource {
 		return categoriaRepository.findAll();
 	}
 
-   //cria um Location e cria um local onde e criado e recuperar ele
+	// cria um Location e cria um local onde e criado e recuperar ele
 	@Autowired
 	private ApplicationEventPublisher publisher;
 	@Autowired
 	private CategoriaService categoriaService;
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categorias, HttpServletResponse response) {
 		Categoria categoriaSalva = categoriaRepository.save(categorias);
-		
-		/*URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
-				.buildAndExpand(categoriaSalva.getCodigo()).toUri();
-		response.setHeader("Location", uri.toASCIIString());
-			*/
 
-		
+		/*
+		 * URI uri =
+		 * ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
+		 * .buildAndExpand(categoriaSalva.getCodigo()).toUri();
+		 * response.setHeader("Location", uri.toASCIIString());
+		 */
+
 		// obj que gerou o event o proprio objeto
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
-		
-		
+
 		/*
 		 * URI uri =
 		 * ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
@@ -65,26 +65,26 @@ public class CategoriaResource {
 
 		// return ResponseEntity.created().body(pessoaSalva);
 		return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva);
-	
-		//return ResponseEntity.created(uri).body(categoriaSalva);
+
+		// return ResponseEntity.created(uri).body(categoriaSalva);
 	}
 
-	
 	@SuppressWarnings("rawtypes")
 	@GetMapping("/{codigo}")
 	public ResponseEntity buscarPeloCodigo(@PathVariable Long codigo) {
-	  return this.categoriaRepository.findById(codigo).map(categoria ->
-	  ResponseEntity.ok(categoria)).orElse(ResponseEntity.notFound().build());
+		return this.categoriaRepository.findById(codigo).map(categoria -> ResponseEntity.ok(categoria))
+				.orElse(ResponseEntity.notFound().build());
 	}
+
 	@DeleteMapping("/{codigo}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long codigo) {
 		this.categoriaRepository.deleteById(codigo);
 	}
-	
+
 	@PutMapping("/{codigo}")
-	public ResponseEntity<Categoria> editar(@PathVariable Long codigo, @Valid @RequestBody Categoria categoria ){
-	Categoria categoriaSalva = 	categoriaService.editar(codigo, categoria);
+	public ResponseEntity<Categoria> editar(@PathVariable Long codigo, @Valid @RequestBody Categoria categoria) {
+		Categoria categoriaSalva = categoriaService.editar(codigo, categoria);
 		return ResponseEntity.ok(categoriaSalva);
 	}
 }

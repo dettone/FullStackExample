@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +24,15 @@ import com.example.algamoney.event.RecursoCriadoEvent;
 import com.example.algamoney.model.Categoria;
 import com.example.algamoney.repository.CategoriaRepository;
 import com.example.algamoney.service.CategoriaService;
-
+//Cross Origin tira o bloqueio para outras portas http
+//spring.io/guides/gs/rest-service-cors <- Serve para habilitar o cors em toda a aplicacao
+//@CrossOrigin(maxAge = 10)
 @RestController
 @RequestMapping("/categorias")
 public class CategoriaResource {
 	@Autowired
 	private CategoriaRepository categoriaRepository;
+	
 
 	@GetMapping
 	public List<Categoria> listar() {

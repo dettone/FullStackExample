@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +35,7 @@ public class CategoriaResource {
 	
 
 	@GetMapping
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA')")
 	public List<Categoria> listar() {
 		return categoriaRepository.findAll();
 	}
@@ -47,6 +48,7 @@ public class CategoriaResource {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('read')")
 	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categorias, HttpServletResponse response) {
 		Categoria categoriaSalva = categoriaRepository.save(categorias);
 
@@ -75,6 +77,7 @@ public class CategoriaResource {
 
 	@SuppressWarnings("rawtypes")
 	@GetMapping("/{codigo}")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('write')")
 	public ResponseEntity buscarPeloCodigo(@PathVariable Long codigo) {
 		return this.categoriaRepository.findById(codigo).map(categoria -> ResponseEntity.ok(categoria))
 				.orElse(ResponseEntity.notFound().build());
@@ -82,6 +85,7 @@ public class CategoriaResource {
 
 	@DeleteMapping("/{codigo}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_CATEGORIA') and #oauth2.hasScope('read')")
 	public void remover(@PathVariable Long codigo) {
 		this.categoriaRepository.deleteById(codigo);
 	}
